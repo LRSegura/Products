@@ -67,21 +67,22 @@ public abstract class CrudWebService<T extends JsonData> {
     }
 
     abstract protected CrudRestOperations<T> getCrudRestOperations();
+    abstract protected String getNameEntityService();
 
     protected String getErrorMessageGet() {
-        return "Error get entities";
+        return "Error get entity " + getNameEntityService();
     }
 
     protected String getErrorMessagePost() {
-        return "Error save entity";
+        return "Error save entity "+ getNameEntityService();
     }
 
     protected String getErrorMessagePut() {
-        return "Error update entity";
+        return "Error update entity "+ getNameEntityService();
     }
 
     protected String getErrorMessageDelete() {
-        return "Error delete entity";
+        return "Error delete entity "+ getNameEntityService();
     }
 
 }

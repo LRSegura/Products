@@ -22,4 +22,11 @@ public class WebServiceProduct extends CrudWebService<JsonProduct> {
     public CrudRestOperations<JsonProduct> getCrudRestOperations() {
         return productService;
     }
+
+    @Override
+    protected String getNameEntityService() {
+        return "Product";
+    }
+
+
 }

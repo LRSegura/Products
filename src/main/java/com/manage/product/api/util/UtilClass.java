@@ -5,6 +5,7 @@ import com.manage.product.api.exception.ApplicationBusinessException;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,15 @@ public class UtilClass {
         if (string.isBlank()) {
             throw new ApplicationBusinessException(message);
         }
+    }
+
+    public static void requireNonNull(Object object, String message) {
+        try {
+            Objects.requireNonNull(object);
+        } catch (NullPointerException exception){
+            throw new ApplicationBusinessException(message);
+        }
+
     }
 
     public static void requireNonBlankString(String string) {
