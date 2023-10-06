@@ -7,6 +7,7 @@ import com.manage.product.api.rest.product.JsonProduct;
 import com.manage.product.api.rest.purchase.JsonPurchase;
 import com.manage.product.api.util.UtilClass;
 import com.manage.product.model.customer.Customer;
+import com.manage.product.model.price.Price;
 import com.manage.product.model.product.Product;
 import com.manage.product.model.purchase.Purchase;
 import com.manage.product.repository.customer.CustomerRepository;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,11 +52,22 @@ public class PurchaseService implements CrudRestOperations<JsonPurchase> {
         UtilClass.requireNonNull(json.idCustomer(), "Customer Id cant be null");
         UtilClass.requireNonNull(json.quantity(), "Quantity cant be null");
 
+        Product product = getProduct(json.idProduct());
+        BigDecimal priceValue =
+                priceRepository.findPriceByValue(json.quantity()).map(Price::getPrice).orElse(product.getDefaultPrice());
+        Customer customer = getCustomer(json.idCustomer());
+        if(customer.getDiscount()){
+            BigDecimal discount = customer.getDiscountValue().divide(BigDecimal.valueOf(100), 2,
+                    RoundingMode.CEILING).multiply(priceValue);
+            priceValue = priceValue.subtract(discount);
+        }
+        BigDecimal total = priceValue.multiply(BigDecimal.valueOf(json.quantity()));
+
         Purchase purchase = new Purchase();
-        purchase.setProduct(getProduct(json.idProduct()));
-        purchase.setCustomer(getCustomer(json.idCustomer()));
+        purchase.setProduct(product);
+        purchase.setCustomer(customer);
         purchase.setQuantity(json.quantity());
-        purchase.setTotal(BigDecimal.ONE);
+        purchase.setTotal(total);
         purchaseRepository.save(purchase);
     }
 

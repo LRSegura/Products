@@ -1,12 +1,10 @@
 package com.manage.product.service.price;
 
 import com.manage.product.api.exception.ApplicationBusinessException;
-import com.manage.product.api.rest.customer.JsonCustomer;
 import com.manage.product.api.rest.model.CrudRestOperations;
 import com.manage.product.api.rest.model.JsonData;
 import com.manage.product.api.rest.price.JsonPrice;
 import com.manage.product.api.util.UtilClass;
-import com.manage.product.model.customer.Customer;
 import com.manage.product.model.price.Price;
 import com.manage.product.model.product.Product;
 import com.manage.product.repository.price.PriceRepository;
@@ -41,20 +39,33 @@ public class PriceService implements CrudRestOperations<JsonPrice> {
         UtilClass.requireNonNull(json.endValue(), "Price end value cant be null");
         UtilClass.requireNonNull(json.price(), "Price value cant be null");
         UtilClass.requireNonNull(json.idProduct(), "Product cant be null");
-        Product product = getProduct(json.idProduct());
 
-        priceRepository.findCrossRange(json.startValue(), json.endValue())
-                .ifPresent(price -> {
-                    throw new ApplicationBusinessException("Your values are crossed. Already exists a price range " +
-                            "that start in " + price.getStartValue()
-                            + " and end in "+ price.getEndValue());
-                });
+        Integer startValue = json.startValue();
+        Integer endValue = json.endValue();
+
+        if(startValue.compareTo(endValue) == 0){
+            throw new ApplicationBusinessException("Start_value must be not equal to end_value");
+        }
+
+        if(startValue.compareTo(endValue) > 0){
+            throw new ApplicationBusinessException("Start_value must be less than end_value");
+        }
+
+        List<Price> prices = priceRepository.findCrossRange(json.startValue(), json.endValue());
+        if(!prices.isEmpty()){
+            StringBuilder error = new StringBuilder();
+            for (Price priceSaved: prices) {
+                error.append("Your values are crossed. Already exists a price range that start in ")
+                        .append(priceSaved.getStartValue()).append(" and end in ").append(priceSaved.getEndValue()).append(". ");
+            }
+            throw new ApplicationBusinessException(error);
+        }
 
         Price price = new Price();
         price.setStartValue(json.startValue());
         price.setEndValue(json.endValue());
         price.setPrice(json.price());
-        price.setProduct(product);
+        price.setProduct(getProduct(json.idProduct()));
         priceRepository.save(price);
     }
 
