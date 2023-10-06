@@ -2,6 +2,8 @@ package com.manage.product.api.util;
 
 
 import com.manage.product.api.exception.ApplicationBusinessException;
+import com.manage.product.model.AbstractEntity;
+import com.manage.product.model.product.Product;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -14,7 +16,11 @@ import java.util.stream.Collectors;
  *
  * @author Luis
  */
-public class UtilClass {
+public final class UtilClass {
+
+    private UtilClass() {
+
+    }
 
     /**
      * Util method to get a {@link Field} collection for the passed entity
@@ -39,7 +45,7 @@ public class UtilClass {
     public static void requireNonNull(Object object, String message) {
         try {
             Objects.requireNonNull(object);
-        } catch (NullPointerException exception){
+        } catch (NullPointerException exception) {
             throw new ApplicationBusinessException(message);
         }
 
@@ -48,5 +54,4 @@ public class UtilClass {
     public static void requireNonBlankString(String string) {
         requireNonBlankString(string, "The passed string is empty!");
     }
-
 }
