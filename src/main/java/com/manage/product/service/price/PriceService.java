@@ -43,6 +43,13 @@ public class PriceService implements CrudRestOperations<JsonPrice> {
         UtilClass.requireNonNull(json.idProduct(), "Product cant be null");
         Product product = getProduct(json.idProduct());
 
+        priceRepository.findCrossRange(json.startValue(), json.endValue())
+                .ifPresent(price -> {
+                    throw new ApplicationBusinessException("Your values are crossed. Already exists a price range " +
+                            "that start in " + price.getStartValue()
+                            + " and end in "+ price.getEndValue());
+                });
+
         Price price = new Price();
         price.setStartValue(json.startValue());
         price.setEndValue(json.endValue());
