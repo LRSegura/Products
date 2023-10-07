@@ -1,5 +1,6 @@
 package com.manage.product.model.product;
 
+import com.manage.product.api.rest.product.JsonProduct;
 import com.manage.product.model.AbstractEntity;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -26,6 +27,11 @@ public class Product extends AbstractEntity {
 
     @Column(name = "Default_Price", nullable = false)
     private BigDecimal defaultPrice;
+
+    public JsonProduct getJsonProduct(){
+        return new JsonProduct(getId(), getRegisterDateFormat(), getUpdateDateFormat(), getName(),getDescription(),
+                getDefaultPrice());
+    }
 
     @Override
     public boolean equals(Object o) {

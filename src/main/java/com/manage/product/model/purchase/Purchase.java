@@ -1,5 +1,6 @@
 package com.manage.product.model.purchase;
 
+import com.manage.product.api.rest.purchase.JsonPurchase;
 import com.manage.product.model.AbstractEntity;
 import com.manage.product.model.customer.Customer;
 import com.manage.product.model.product.Product;
@@ -31,6 +32,12 @@ public class Purchase extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "Id_Customer", nullable = false)
     private Customer customer;
+
+    public JsonPurchase geJsonPurchase(){
+        return new JsonPurchase(getId(),getRegisterDateFormat(), getUpdateDateFormat(), getProduct().getId(),
+                getQuantity(),getTotal(),
+                getCustomer().getId(), getProduct().getJsonProduct(), getCustomer().getJsonCustomer());
+    }
 
     @Override
     public boolean equals(Object object) {

@@ -27,8 +27,7 @@ public class PriceService  extends AbstractService implements CrudRestOperations
 
     @Override
     public List<? extends JsonData> restGet() {
-        return priceRepository.findAll().stream().map(price -> new JsonPrice(price.getId(),
-                price.getStartValue(), price.getEndValue(), price.getPrice(), price.getProduct().getId())).toList();
+        return priceRepository.findAll().stream().map(Price::getJsonPrice).toList();
     }
 
     @Override

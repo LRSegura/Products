@@ -3,9 +3,11 @@ package com.manage.product.api.persistence.validation;
 
 
 import com.manage.product.api.annotation.InjectedDate;
+import com.manage.product.api.annotation.InjectedDateType;
 import com.manage.product.api.exception.ValueInjectionException;
 import com.manage.product.api.util.UtilClass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -20,13 +22,18 @@ public class HibernateEventHandlers {
 
     @PrePersist
     void prePersist(Object entity) {
-        injectDate(entity);
+        injectRegisterDate(entity, InjectedDateType.REGISTER_DATE);
     }
 
-    private void injectDate(Object entity) {
+    @PreUpdate
+    void preUpdate(Object entity) {
+        injectRegisterDate(entity, InjectedDateType.UPDATE_DATE);
+    }
+
+    private void injectRegisterDate(Object entity, InjectedDateType injectedDateType) {
         for (Field field : UtilClass.getFieldsFromEntity(entity)) {
             InjectedDate injectedDate = field.getAnnotation(InjectedDate.class);
-            if (injectedDate == null) {
+            if (injectedDate == null || !injectedDateType.equals(injectedDate.DATE_TYPE())) {
                 continue;
             }
             try {

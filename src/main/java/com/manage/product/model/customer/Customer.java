@@ -1,5 +1,6 @@
 package com.manage.product.model.customer;
 
+import com.manage.product.api.rest.customer.JsonCustomer;
 import com.manage.product.model.AbstractEntity;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -26,6 +27,11 @@ public class Customer extends AbstractEntity {
 
     @Column(name = "Discount_Value", nullable = false)
     private BigDecimal discountValue;
+
+    public JsonCustomer getJsonCustomer(){
+        return new JsonCustomer(getId(),getRegisterDateFormat(),getUpdateDateFormat(), getName(), getDiscount(),
+                getDiscountValue());
+    }
 
     @Override
     public boolean equals(Object o) {

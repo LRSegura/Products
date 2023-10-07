@@ -27,8 +27,7 @@ public class ProductService extends AbstractService implements CrudRestOperation
 
     @Override
     public List<? extends JsonData> restGet() {
-        return productRepository.findAll().stream().map(product -> new JsonProduct(product.getId(), product.getName(),
-                product.getDescription(), product.getDefaultPrice())).toList();
+        return productRepository.findAll().stream().map(Product::getJsonProduct).toList();
     }
 
     @Override
@@ -55,6 +54,9 @@ public class ProductService extends AbstractService implements CrudRestOperation
         Product product = getEntity(Product.class, json.id());
 
         if (Objects.nonNull(json.name()) && !json.name().isEmpty()) {
+            if (productRepository.existsProductByName(json.name())) {
+                throw new ApplicationBusinessException("Duplicated product name");
+            }
             product.setName(json.name());
         }
         if (Objects.nonNull(json.description()) && !json.description().isEmpty()) {

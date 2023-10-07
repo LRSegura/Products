@@ -1,6 +1,6 @@
 package com.manage.product.service.purchase;
 
-import com.manage.product.api.exception.ApplicationBusinessException;
+
 import com.manage.product.api.rest.model.CrudRestOperations;
 import com.manage.product.api.rest.model.JsonData;
 import com.manage.product.api.rest.purchase.JsonPurchase;
@@ -36,9 +36,7 @@ public class PurchaseService extends AbstractService implements CrudRestOperatio
 
     @Override
     public List<? extends JsonData> restGet() {
-        return purchaseRepository.findAll().stream().map(purchase -> new JsonPurchase(purchase.getId(),
-                purchase.getProduct().getId(),
-                purchase.getQuantity(), purchase.getTotal(), purchase.getCustomer().getId())).toList();
+        return purchaseRepository.findAll().stream().map(Purchase::geJsonPurchase).toList();
     }
 
     @Override
@@ -48,15 +46,8 @@ public class PurchaseService extends AbstractService implements CrudRestOperatio
         UtilClass.requireNonNull(json.quantity(), "Quantity cant be null");
 
         Product product = getEntity(Product.class, json.idProduct());
-        BigDecimal priceValue =
-                priceRepository.findPriceByValue(json.quantity()).map(Price::getPrice).orElse(product.getDefaultPrice());
         Customer customer = getEntity(Customer.class,json.idCustomer());
-        if(customer.getDiscount()){
-            BigDecimal discount = customer.getDiscountValue().divide(BigDecimal.valueOf(100), 2,
-                    RoundingMode.CEILING).multiply(priceValue);
-            priceValue = priceValue.subtract(discount);
-        }
-        BigDecimal total = priceValue.multiply(BigDecimal.valueOf(json.quantity()));
+        BigDecimal total = getTotal(json);
 
         Purchase purchase = new Purchase();
         purchase.setProduct(product);
@@ -66,22 +57,39 @@ public class PurchaseService extends AbstractService implements CrudRestOperatio
         purchaseRepository.save(purchase);
     }
 
+    private BigDecimal getTotal(JsonPurchase json){
+        Product product = getEntity(Product.class, json.idProduct());
+        BigDecimal priceValue =
+                priceRepository.findPriceByValue(json.quantity(), product.getId()).map(Price::getPrice).orElse(product.getDefaultPrice());
+        Customer customer = getEntity(Customer.class,json.idCustomer());
+        if(customer.getDiscount()){
+            BigDecimal discount = customer.getDiscountValue().divide(BigDecimal.valueOf(100), 2,
+                    RoundingMode.CEILING).multiply(priceValue);
+            priceValue = priceValue.subtract(discount);
+        }
+        return priceValue.multiply(BigDecimal.valueOf(json.quantity()));
+    }
     @Override
     public void restUpdate(JsonPurchase json) {
         UtilClass.requireNonNull(json.id(), "Purchase Id cant be null");
 
-        Purchase purchase = purchaseRepository.findById(json.id()).orElseThrow(() -> {
-            String errorMessage = "Purchase not found. Id " + json.id();
-            return new ApplicationBusinessException(errorMessage);
-        });
+        Purchase purchase = getEntity(Purchase.class, json.id());
+        boolean isPriceChanged = false;
         if (Objects.nonNull(json.idProduct())) {
             purchase.setProduct(getEntity(Product.class,json.idProduct()));
+            isPriceChanged = true;
         }
         if (Objects.nonNull(json.idCustomer())) {
             purchase.setCustomer(getEntity(Customer.class,json.idCustomer()));
+            isPriceChanged = true;
         }
         if (Objects.nonNull(json.quantity())) {
             purchase.setQuantity(json.quantity());
+            isPriceChanged = true;
+        }
+        if(isPriceChanged){
+            BigDecimal total = getTotal(json);
+            purchase.setTotal(total);
         }
         purchaseRepository.save(purchase);
     }

@@ -1,6 +1,7 @@
 package com.manage.product.model;
 
 import com.manage.product.api.annotation.InjectedDate;
+import com.manage.product.api.annotation.InjectedDateType;
 import com.manage.product.api.persistence.validation.HibernateEventHandlers;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Getter
@@ -22,22 +24,37 @@ public class AbstractEntity implements Serializable {
     private Long id;
 
     @Column(name = "Register_Date", nullable = false)
-    @InjectedDate
+    @InjectedDate(DATE_TYPE = InjectedDateType.REGISTER_DATE)
     private LocalDateTime registerDate;
+
+    @Column(name = "Update_Date")
+    @InjectedDate(DATE_TYPE = InjectedDateType.UPDATE_DATE)
+    private LocalDateTime updateDate;
 
     @Version
     @Column(name = "OptLock")
     private int version;
 
+    public String getRegisterDateFormat() {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return registerDate != null ? registerDate.format(format) : "";
+    }
+
+    public String getUpdateDateFormat() {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return updateDate != null ? updateDate.format(format) : "";
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AbstractEntity abstractEntity)) return false;
-        return version == abstractEntity.version && Objects.equals(id, abstractEntity.id) && Objects.equals(registerDate, abstractEntity.registerDate);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof AbstractEntity that)) return false;
+        return version == that.version && Objects.equals(id, that.id) && Objects.equals(registerDate, that.registerDate)
+                && Objects.equals(updateDate, that.updateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, registerDate, version);
+        return Objects.hash(id, registerDate, updateDate, version);
     }
 }

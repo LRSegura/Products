@@ -24,8 +24,7 @@ public class CustomerService extends AbstractService implements CrudRestOperatio
 
     @Override
     public List<? extends JsonData> restGet() {
-        return customerRepository.findAll().stream().map(customer -> new JsonCustomer(customer.getId(),
-                customer.getName(), customer.getDiscount(), customer.getDiscountValue())).toList();
+        return customerRepository.findAll().stream().map(Customer::getJsonCustomer).toList();
     }
 
     @Override

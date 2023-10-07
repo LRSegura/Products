@@ -1,5 +1,6 @@
 package com.manage.product.model.price;
 
+import com.manage.product.api.rest.price.JsonPrice;
 import com.manage.product.model.AbstractEntity;
 import com.manage.product.model.product.Product;
 import jakarta.persistence.*;
@@ -29,6 +30,13 @@ public class Price extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "Id_Product", nullable = false)
     private Product product;
+
+    public JsonPrice getJsonPrice(){
+        return new JsonPrice(getId(), getRegisterDateFormat(),getUpdateDateFormat(), getStartValue(),getEndValue(),
+                getPrice(),
+                getProduct().getId(),
+                getProduct().getJsonProduct());
+    }
 
     @Override
     public boolean equals(Object o) {
