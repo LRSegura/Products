@@ -35,8 +35,13 @@ public class PurchaseService extends AbstractService implements CrudRestOperatio
     }
 
     @Override
-    public List<? extends JsonData> restGet() {
+    public List<? extends JsonData> restGetAll() {
         return purchaseRepository.findAll().stream().map(Purchase::geJsonPurchase).toList();
+    }
+
+    @Override
+    public JsonPurchase restGet(Long id) {
+        return ((Purchase)getEntity(Purchase.class, id)).geJsonPurchase();
     }
 
     @Override

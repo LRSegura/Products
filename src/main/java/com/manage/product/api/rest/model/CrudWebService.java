@@ -17,10 +17,21 @@ import java.util.function.Supplier;
 @Slf4j
 public abstract class CrudWebService<T extends JsonData> {
 
+
     @GetMapping()
-    public ResponseEntity<JsonResponse> get() {
+    public ResponseEntity<JsonResponse> get(@QueryParam(value = "id") Long id) {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
-            List<? extends JsonData> entities = getCrudRestOperations().restGet();
+            JsonData entity = getCrudRestOperations().restGet(id);
+            JsonDataResponse jsonDataResponse = new JsonDataResponse(entity);
+            return ResponseEntity.ok(jsonDataResponse);
+        };
+        return executeTryCatch(supplierTry, getErrorMessageGet());
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<JsonResponse> getAll() {
+        Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
+            List<? extends JsonData> entities = getCrudRestOperations().restGetAll();
             JsonDataResponse jsonDataResponse = new JsonDataResponse(entities);
             return ResponseEntity.ok(jsonDataResponse);
         };

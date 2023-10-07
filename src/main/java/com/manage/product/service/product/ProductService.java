@@ -26,8 +26,13 @@ public class ProductService extends AbstractService implements CrudRestOperation
     }
 
     @Override
-    public List<? extends JsonData> restGet() {
+    public List<? extends JsonData> restGetAll() {
         return productRepository.findAll().stream().map(Product::getJsonProduct).toList();
+    }
+
+    @Override
+    public JsonProduct restGet(Long id) {
+        return ((Product)getEntity(Product.class, id)).getJsonProduct();
     }
 
     @Override
