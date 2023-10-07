@@ -3,17 +3,15 @@ package com.manage.product.service.purchase;
 import com.manage.product.api.exception.ApplicationBusinessException;
 import com.manage.product.api.rest.model.CrudRestOperations;
 import com.manage.product.api.rest.model.JsonData;
-import com.manage.product.api.rest.product.JsonProduct;
 import com.manage.product.api.rest.purchase.JsonPurchase;
 import com.manage.product.api.util.UtilClass;
 import com.manage.product.model.customer.Customer;
 import com.manage.product.model.price.Price;
 import com.manage.product.model.product.Product;
 import com.manage.product.model.purchase.Purchase;
-import com.manage.product.repository.customer.CustomerRepository;
 import com.manage.product.repository.price.PriceRepository;
-import com.manage.product.repository.product.ProductRepository;
 import com.manage.product.repository.purchase.PurchaseRepository;
+import com.manage.product.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,18 +22,15 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class PurchaseService implements CrudRestOperations<JsonPurchase> {
+public class PurchaseService extends AbstractService implements CrudRestOperations<JsonPurchase> {
 
-    private final ProductRepository productRepository;
+
     private final PriceRepository priceRepository;
-    private final CustomerRepository customerRepository;
+
     private final PurchaseRepository purchaseRepository;
 
-    public PurchaseService(ProductRepository productRepository, PriceRepository priceRepository, CustomerRepository customerRepository,
-                           PurchaseRepository purchaseRepository) {
-        this.productRepository = productRepository;
+    public PurchaseService(PriceRepository priceRepository, PurchaseRepository purchaseRepository) {
         this.priceRepository = priceRepository;
-        this.customerRepository = customerRepository;
         this.purchaseRepository = purchaseRepository;
     }
 
@@ -52,10 +47,10 @@ public class PurchaseService implements CrudRestOperations<JsonPurchase> {
         UtilClass.requireNonNull(json.idCustomer(), "Customer Id cant be null");
         UtilClass.requireNonNull(json.quantity(), "Quantity cant be null");
 
-        Product product = getProduct(json.idProduct());
+        Product product = getEntity(Product.class, json.idProduct());
         BigDecimal priceValue =
                 priceRepository.findPriceByValue(json.quantity()).map(Price::getPrice).orElse(product.getDefaultPrice());
-        Customer customer = getCustomer(json.idCustomer());
+        Customer customer = getEntity(Customer.class,json.idCustomer());
         if(customer.getDiscount()){
             BigDecimal discount = customer.getDiscountValue().divide(BigDecimal.valueOf(100), 2,
                     RoundingMode.CEILING).multiply(priceValue);
@@ -80,10 +75,10 @@ public class PurchaseService implements CrudRestOperations<JsonPurchase> {
             return new ApplicationBusinessException(errorMessage);
         });
         if (Objects.nonNull(json.idProduct())) {
-            purchase.setProduct(getProduct(json.idProduct()));
+            purchase.setProduct(getEntity(Product.class,json.idProduct()));
         }
         if (Objects.nonNull(json.idCustomer())) {
-            purchase.setCustomer(getCustomer(json.idCustomer()));
+            purchase.setCustomer(getEntity(Customer.class,json.idCustomer()));
         }
         if (Objects.nonNull(json.quantity())) {
             purchase.setQuantity(json.quantity());
@@ -97,18 +92,4 @@ public class PurchaseService implements CrudRestOperations<JsonPurchase> {
         //TODO make validation
         purchaseRepository.deleteById(id);
     }
-    private Product getProduct(Long id){
-        return productRepository.findById(id).orElseThrow(()-> {
-            String errorMessage = "Product not found. Id " + id;
-            return new ApplicationBusinessException(errorMessage);
-        });
-    }
-
-    private Customer getCustomer(Long id){
-        return customerRepository.findById(id).orElseThrow(()-> {
-            String errorMessage = "Customer not found. Id " + id;
-            return new ApplicationBusinessException(errorMessage);
-        });
-    }
-
 }

@@ -7,15 +7,14 @@ import com.manage.product.api.rest.model.JsonData;
 import com.manage.product.api.util.UtilClass;
 import com.manage.product.model.customer.Customer;
 import com.manage.product.repository.customer.CustomerRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.manage.product.service.AbstractService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
 @Service
-@Slf4j
-public class CustomerService implements CrudRestOperations<JsonCustomer> {
+public class CustomerService extends AbstractService implements CrudRestOperations<JsonCustomer> {
 
     private final CustomerRepository customerRepository;
 
@@ -48,12 +47,8 @@ public class CustomerService implements CrudRestOperations<JsonCustomer> {
     @Override
     public void restUpdate(JsonCustomer json) {
         UtilClass.requireNonNull(json.id(), "Customer Id cant be null");
-        Long id = json.id();
-        Customer customer = customerRepository.findById(json.id()).orElseThrow(() -> {
-            String errorMessage = "Customer not found. Id " + id;
-            return new ApplicationBusinessException(errorMessage);
-        });
-        if (Objects.nonNull(json.name())) {
+        Customer customer = getEntity(Customer.class, json.id());
+        if (Objects.nonNull(json.name()) && !json.name().isEmpty()) {
             customer.setName(json.name());
         }
         if (Objects.nonNull(json.discount())) {

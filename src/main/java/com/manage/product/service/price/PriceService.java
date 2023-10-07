@@ -8,7 +8,7 @@ import com.manage.product.api.util.UtilClass;
 import com.manage.product.model.price.Price;
 import com.manage.product.model.product.Product;
 import com.manage.product.repository.price.PriceRepository;
-import com.manage.product.repository.product.ProductRepository;
+import com.manage.product.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +17,12 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class PriceService implements CrudRestOperations<JsonPrice> {
+public class PriceService  extends AbstractService implements CrudRestOperations<JsonPrice> {
 
     private final PriceRepository priceRepository;
-    private final ProductRepository productRepository;
 
-    public PriceService(PriceRepository priceRepository, ProductRepository productRepository) {
+    public PriceService(PriceRepository priceRepository) {
         this.priceRepository = priceRepository;
-        this.productRepository = productRepository;
     }
 
     @Override
@@ -65,7 +63,7 @@ public class PriceService implements CrudRestOperations<JsonPrice> {
         price.setStartValue(json.startValue());
         price.setEndValue(json.endValue());
         price.setPrice(json.price());
-        price.setProduct(getProduct(json.idProduct()));
+        price.setProduct(getEntity(Product.class, json.idProduct()));
         priceRepository.save(price);
     }
 
@@ -73,7 +71,7 @@ public class PriceService implements CrudRestOperations<JsonPrice> {
     public void restUpdate(JsonPrice json) {
         UtilClass.requireNonNull(json.id(), "Price Id cant be null");
 
-        Price price = getPrice(json.id());
+        Price price = getEntity(Price.class, json.id());
 
         if (Objects.nonNull(json.startValue())) {
             price.setStartValue(json.startValue());
@@ -85,22 +83,9 @@ public class PriceService implements CrudRestOperations<JsonPrice> {
             price.setPrice(json.price());
         }
         if (Objects.nonNull(json.idProduct())) {
-            price.setProduct(getProduct(json.idProduct()));
+            price.setProduct(getEntity(Product.class, json.idProduct()));
         }
         priceRepository.save(price);
-    }
-
-    private Product getProduct(Long id){
-        return productRepository.findById(id).orElseThrow(()-> {
-            String errorMessage = "Product not found. Id " + id;
-            return new ApplicationBusinessException(errorMessage);
-        });
-    }
-    private Price getPrice(Long id){
-        return priceRepository.findById(id).orElseThrow(()-> {
-            String errorMessage = "price not found. Id " + id;
-            return new ApplicationBusinessException(errorMessage);
-        });
     }
 
     @Override
