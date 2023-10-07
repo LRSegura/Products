@@ -53,7 +53,7 @@ public class PriceService  extends AbstractService implements CrudRestOperations
             throw new ApplicationBusinessException("Start_value must be less than end_value");
         }
 
-        List<Price> prices = priceRepository.findCrossRange(json.startValue(), json.endValue());
+        List<Price> prices = priceRepository.findCrossRange(json.startValue(), json.endValue(), json.idProduct());
         if(!prices.isEmpty()){
             StringBuilder error = new StringBuilder();
             for (Price priceSaved: prices) {

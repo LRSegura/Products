@@ -19,6 +19,7 @@ public abstract class CrudWebService<T extends JsonData> {
 
 
     @GetMapping()
+    @CrossOrigin(origins = "*")
     public ResponseEntity<JsonResponse> get(@QueryParam(value = "id") Long id) {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
             JsonData entity = getCrudRestOperations().restGet(id);
@@ -29,6 +30,7 @@ public abstract class CrudWebService<T extends JsonData> {
     }
 
     @GetMapping("/all")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<JsonResponse> getAll() {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
             List<? extends JsonData> entities = getCrudRestOperations().restGetAll();
@@ -39,6 +41,7 @@ public abstract class CrudWebService<T extends JsonData> {
     }
 
     @PostMapping()
+    @CrossOrigin(origins = "*")
     public ResponseEntity<JsonResponse> save(@RequestBody T json) {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
             getCrudRestOperations().restSave(json);
@@ -48,6 +51,7 @@ public abstract class CrudWebService<T extends JsonData> {
     }
 
     @PutMapping()
+    @CrossOrigin(origins = "*")
     public ResponseEntity<JsonResponse> update(@RequestBody T json) {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
             getCrudRestOperations().restUpdate(json);
@@ -57,6 +61,7 @@ public abstract class CrudWebService<T extends JsonData> {
     }
 
     @DeleteMapping()
+    @CrossOrigin(origins = "*")
     public ResponseEntity<JsonResponse> delete(@QueryParam(value = "id") Long id) {
         Supplier<ResponseEntity<JsonResponse>> supplierTry = () -> {
             getCrudRestOperations().restDelete(id);
