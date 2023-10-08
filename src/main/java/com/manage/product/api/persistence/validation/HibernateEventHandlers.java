@@ -33,7 +33,7 @@ public class HibernateEventHandlers {
     private void injectRegisterDate(Object entity, InjectedDateType injectedDateType) {
         for (Field field : UtilClass.getFieldsFromEntity(entity)) {
             InjectedDate injectedDate = field.getAnnotation(InjectedDate.class);
-            if (injectedDate == null || !injectedDateType.equals(injectedDate.DATE_TYPE())) {
+            if (injectedDate == null || !injectedDateType.equals(injectedDate.dateType())) {
                 continue;
             }
             try {

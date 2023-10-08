@@ -9,6 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Web service class for purchase
+ * @author Luis
+ */
 @RestController
 @RequestMapping("/api/purchase")
 @Slf4j

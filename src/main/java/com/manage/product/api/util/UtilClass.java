@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Application util class
+ * Application util class. This class cant be instanced.
  *
  * @author Luis
  */
@@ -36,12 +36,20 @@ public final class UtilClass {
         return fields;
     }
 
+    /**
+     * Util method to validate that the passed string is not empty. If the string is empty then an {@link ApplicationBusinessException}
+     * will be thrown with the message passed.
+     */
     public static void requireNonBlankString(String string, String message) {
         if (string.isBlank()) {
             throw new ApplicationBusinessException(message);
         }
     }
 
+    /**
+     * Util method to validate that the passed object is not null. If the object is null then an
+     * {@link ApplicationBusinessException} will be thrown with the message passed.
+     */
     public static void requireNonNull(Object object, String message) {
         try {
             Objects.requireNonNull(object);

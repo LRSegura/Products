@@ -22,16 +22,27 @@ public class CustomerService extends AbstractService implements CrudRestOperatio
         this.customerRepository = customerRepository;
     }
 
+    /**
+     * Represent the business logic to get all customers.
+     */
     @Override
     public List<? extends JsonData> restGetAll() {
         return customerRepository.findAll().stream().map(Customer::getJsonCustomer).toList();
     }
 
+    /**
+     * Represent the business logic to get a customer by id.
+     */
     @Override
     public JsonCustomer restGet(Long id) {
         return ((Customer)getEntity(Customer.class, id)).getJsonCustomer();
     }
 
+    /**
+     * Represent the business logic to save a customer. All the required values are validated before save the entity.
+     * If a required value is not present, then a {@link ApplicationBusinessException} will be thrown and the error
+     * message will be returned as a Json by the web service.
+     */
     @Override
     public void restSave(JsonCustomer json) {
         UtilClass.requireNonNull(json.name(), "Customer name cant be null");
@@ -48,6 +59,9 @@ public class CustomerService extends AbstractService implements CrudRestOperatio
         customerRepository.save(customer);
     }
 
+    /**
+     * Represent the business logic to update a customer.
+     */
     @Override
     public void restUpdate(JsonCustomer json) {
         UtilClass.requireNonNull(json.id(), "Customer Id cant be null");
@@ -64,10 +78,12 @@ public class CustomerService extends AbstractService implements CrudRestOperatio
         customerRepository.save(customer);
     }
 
+    /**
+     * Represent the business logic to delete a customer.
+     */
     @Override
     public void restDelete(Long id) {
         UtilClass.requireNonNull(id, "Customer Id cant be null");
-        //TODO make validation
         customerRepository.deleteById(id);
     }
 

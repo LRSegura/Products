@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ *
+ * Abstract class for CRUD operations used by web services. This class should be extended to avoid boilerplate code.
+ * All the CRUD methods return a Response based on {@link com.manage.product.api.rest.model.response.JsonResponse}
+ * interface. See {@link com.manage.product.api.rest.model.JsonData}
+ *
+ * @author Luis
+ */
 @Slf4j
 public abstract class CrudWebService<T extends JsonData> {
 

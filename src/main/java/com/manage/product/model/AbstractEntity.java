@@ -8,10 +8,15 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+
+/**
+ * Abstract representation for hibernate entity. It has common field for all entities.
+ */
 @Getter
 @ToString
 @MappedSuperclass
@@ -24,11 +29,11 @@ public class AbstractEntity implements Serializable {
     private Long id;
 
     @Column(name = "Register_Date", nullable = false)
-    @InjectedDate(DATE_TYPE = InjectedDateType.REGISTER_DATE)
+    @InjectedDate(dateType = InjectedDateType.REGISTER_DATE)
     private LocalDateTime registerDate;
 
     @Column(name = "Update_Date")
-    @InjectedDate(DATE_TYPE = InjectedDateType.UPDATE_DATE)
+    @InjectedDate(dateType = InjectedDateType.UPDATE_DATE)
     private LocalDateTime updateDate;
 
     @Version

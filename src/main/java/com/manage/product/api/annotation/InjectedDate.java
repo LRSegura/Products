@@ -6,14 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to inject de current date to the applied field. This annotation must be used in an entity field.
- * The date is injected at the moment of persisting the entity by the
- * {@link com.manage.product.api.persistence.validation.HibernateEventHandlers} listener.
- *
+ * Annotation used to inject the current date to the applied field. This annotation must be used in a hibernate entity
+ * field. The date is injected by the
+ * {@link com.manage.product.api.persistence.validation.HibernateEventHandlers} listener. The injection moment
+ * depends on {@link com.manage.product.api.annotation.InjectedDateType} value passed to the variable dateType.
  * @author Luis
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface InjectedDate {
-    InjectedDateType DATE_TYPE();
+    InjectedDateType dateType() default InjectedDateType.REGISTER_DATE;
 }
