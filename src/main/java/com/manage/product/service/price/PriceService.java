@@ -25,16 +25,27 @@ public class PriceService  extends AbstractService implements CrudRestOperations
         this.priceRepository = priceRepository;
     }
 
+    /**
+     * Represent the business logic to get all prices.
+     */
     @Override
     public List<? extends JsonData> restGetAll() {
         return priceRepository.findAll().stream().map(Price::getJsonPrice).toList();
     }
 
+    /**
+     * Represent the business logic to get a price by id.
+     */
     @Override
     public JsonPrice restGet(Long id) {
         return ((Price)getEntity(Price.class, id)).getJsonPrice();
     }
 
+    /**
+     * Represent the business logic to save a price. All the required values are validated before save the entity.
+     * If a required value is not present, then a {@link ApplicationBusinessException} will be thrown and the error
+     * message will be returned as a Json by the web service.
+     */
     @Override
     public void restSave(JsonPrice json) {
         UtilClass.requireNonNull(json.startValue(), "Price start value cant be null");
@@ -71,6 +82,9 @@ public class PriceService  extends AbstractService implements CrudRestOperations
         priceRepository.save(price);
     }
 
+    /**
+     * Represent the business logic to update the price.
+     */
     @Override
     public void restUpdate(JsonPrice json) {
         UtilClass.requireNonNull(json.id(), "Price Id cant be null");
@@ -92,6 +106,9 @@ public class PriceService  extends AbstractService implements CrudRestOperations
         priceRepository.save(price);
     }
 
+    /**
+     * Represent the business logic to delete a price by id.
+     */
     @Override
     public void restDelete(Long id) {
         UtilClass.requireNonNull(id, "Price Id cant be null");

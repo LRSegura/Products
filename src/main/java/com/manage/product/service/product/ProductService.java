@@ -25,16 +25,29 @@ public class ProductService extends AbstractService implements CrudRestOperation
         this.productRepository = productRepository;
     }
 
+
+    /**
+     * Represent the business logic to get all products.
+     */
     @Override
     public List<? extends JsonData> restGetAll() {
         return productRepository.findAll().stream().map(Product::getJsonProduct).toList();
     }
 
+    /**
+     * Represent the business logic to get a product by id.
+     */
     @Override
     public JsonProduct restGet(Long id) {
         return ((Product)getEntity(Product.class, id)).getJsonProduct();
     }
 
+
+    /**
+     * Represent the business logic to save a product. All the required values are validated before save the entity.
+     * If a required value is not present, then a {@link ApplicationBusinessException} will be thrown and the error
+     * message will be returned as a Json by the web service.
+     */
     @Override
     public void restSave(JsonProduct json) {
         UtilClass.requireNonNull(json.name(), "Product name cant be null");
@@ -52,6 +65,9 @@ public class ProductService extends AbstractService implements CrudRestOperation
         productRepository.save(product);
     }
 
+    /**
+     * Represent the business logic to update a product.
+     */
     @Override
     public void restUpdate(JsonProduct json) {
         UtilClass.requireNonNull(json.id(), "Product Id cant be null");
@@ -73,6 +89,9 @@ public class ProductService extends AbstractService implements CrudRestOperation
         productRepository.save(product);
     }
 
+    /**
+     * Represent the business logic to delete a product by id.
+     */
     @Override
     public void restDelete(Long id) {
         UtilClass.requireNonNull(id, "Product Id cant be null");
