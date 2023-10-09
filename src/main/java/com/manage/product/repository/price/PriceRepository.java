@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface PriceRepository extends JpaRepository<Price, Long> {
-    @Query("SELECT p FROM Price p WHERE ?1 between p.startValue and p.endValue or ?2 between p.startValue " +
-            "and p.endValue and p.product.id = ?3")
+    @Query("SELECT p FROM Price p WHERE (?1 between p.startValue and p.endValue or ?2 between p.startValue " +
+            "and p.endValue) and p.product.id = ?3")
     List<Price> findCrossRange(Integer startValue, Integer endValue, Long idProduct);
 
     @Query("SELECT p FROM Price p WHERE ?1 between p.startValue and p.endValue and p.product.id = ?2")
